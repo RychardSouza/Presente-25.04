@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rychard e Mariana</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background-color: #141414;
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      overflow-x: hidden;
+    }
+    /* Netflix style top navigation bar */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #141414;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 1001;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    }
+    nav .logo {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2rem;
+      color: #e50914;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      margin-left: 30px;
+      padding: 0;
+    }
+    nav ul li {
+      margin-right: 20px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    nav ul li:hover {
+      color: #e50914;
+    }
+    header {
+      position: relative;
+      background-image: url('1.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 3rem 4rem 4rem 4rem;
+      text-shadow: 0 0 20px #141414;
+      transition: background-image 0.5s ease-in-out;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(to top, #141414 0%, rgba(20,20,20,0) 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    header h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 5rem;
+      margin: 0 0 0.5rem 0;
+      max-width: 600px;
+    }
+    .estreia {
+      color: #09e51b;
+      margin-top: 0.5rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    .descricao {
+      margin-top: 1rem;
+      max-width: 700px;
+      font-size: 1.4rem;
+      font-weight: 400;
+      line-height: 1.3;
+      max-height: 4.5em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .play-button, .back-button {
+      margin-top: 2rem;
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.3rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 1rem;
+      font-weight: 600;
+      box-shadow: 0 0 10px #e50914;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .play-button:hover, .back-button:hover {
+      background-color: #f40612;
+      box-shadow: 0 0 20px #f40612;
+    }
+    .video-section {
+      display: none;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+    .video-section iframe {
+      width: 100%;
+      max-width: 960px;
+      height: 540px;
+      border: none;
+      margin-top: 1rem;
+    }
+    .episodes {
+      padding: 20px 30px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .episode {
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(0,0,0,0.6);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .episode:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 25px rgba(168, 168, 168, 0.4);
+    }
+    
+    .episode img {
+      width: 100%;
+      height: 250px;
+      transition: 0.4s ease;
+      object-fit: cover;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    
+    .episode:hover img {
+      opacity: 0.9;
+      filter: brightness(1.1);
+    }
+    
+    .episode-title {
+      font-weight: bold;
+      font-size: 18px;
+      color: #fff;
+      padding: 10px 10px 0;
+      text-align: left;
+    }
+    
+    .episode-desc {
+      font-size: 14px;
+      color: #ccc;
+      padding: 0 10px 12px;
+      text-align: left;
+      border-top: 1px solid #333;
+      margin-top: 8px;
+    }
+    
+    audio {
+      display: none;
+    }
+    .fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 998;
+    }
+    .love-note {
+      position: fixed;
+      bottom: 100px;
+      right: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .note-content {
+      display: none;
+      position: fixed;
+      bottom: 70px;
+      right: 10px;
+      background-color: #222;
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .contador {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0,0,0,0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      z-index: 1000;
+    }
+    .creditos {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #aaa;
+    }
+    .emoji-shower {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 997;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .buttons {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .buttons button {
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 10px;
+      background-color: #ff4d6d;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .buttons button:hover {
+      background-color: #e03e5c;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      padding-top: 60px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background-color: #2e2e2e;
+      margin: 10px;
+      padding: 20px 20px 65px 20px;
+      border: 1px solid #888;
+      
+      max-width: 600px;
+      border-radius: 15px;
+      text-align: left;
+      color: white;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .formulario label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+
+    .formulario input[type="radio"],
+    .formulario textarea {
+      margin-top: 5px;
+    }
+
+    .formulario textarea {
+      width: 95%;
+      min-height: 80px;
+      resize: vertical;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .resposta-final {
+      background-color: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      nav ul {
+        display: none;
+      }
+      header {
+        height: 50vh;
+        padding: 15rem 1.5rem 3rem 1.5rem;
+      }
+      header h1 {
+        font-size: 3rem;
+        max-width: 100%;
+      }
+      .estreia {
+        font-size: 1rem;
+      }
+      .descricao {
+        font-size: 1rem;
+        max-width: 100%;
+        max-height: none;
+      }
+      .play-button, .back-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+      }
+      .episodes {
+        flex-wrap: wrap;
+        overflow-x: auto;
+        padding: 1rem 1rem 3rem 1rem;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 10px;
+        padding-left: 23px;
+      }
+      .episode {
+        min-width: 170px;
+        max-width: 170px;
+        margin-right: 1rem;
+      }
+      .episode-title {
+        font-size: 1rem;
+      }
+      .episode-desc {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio autoplay loop id="bg-music">
+    <source src="https://www.dropbox.com/scl/fi/xyyyhfmu50qn6tsl5b6lc/If-We-Ever-Broke-Up.mp3?rlkey=qybukbn9z0z0kqpbkky4n2igf&raw=1" type="audio/mpeg">
+  </audio>
+
+  <canvas class="fireworks"></canvas>
+  <canvas class="floating-hearts"></canvas>
+  <canvas class="emoji-shower" id="emojiCanvas"></canvas>
+
+  <div class="contador" id="contador"></div>
+
+  <div class="love-note" onclick="toggleNote()">💌</div>
+  <div class="note-content" id="noteContent">
+    Mariana, você é a minha melhor escolha todos os dias. Obrigado por estar comigo. ❤️
+  </div>
+
+  <div class="buttons">
+    <button onclick="abrirModal()">🎮</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalJogo" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="fecharModal()">&times;</span>
+      <form id="formJogo" class="formulario">
+        <label>Você me ama de verdade?</label>
+        <input type="radio" name="ama" value="Sim"> Sim
+        <input type="radio" name="ama" value="Não"> Não
+
+        <label>Você confia em mim, ao ponto de ser 100% sincera comigo?</label>
+        <input type="radio" name="confia" value="Sim"> Sim
+        <input type="radio" name="confia" value="Não"> Não
+
+        <label>Você sonha em ter um filho comigo?</label>
+        <input type="radio" name="filho" value="Sim"> Sim
+        <input type="radio" name="filho" value="Não"> Não
+
+        <label>Qual seu maior sonho comigo?</label>
+        <textarea name="sonho"></textarea>
+
+        <label>Qual foi seu momento mais especial comigo?</label>
+        <textarea name="momento"></textarea>
+
+        <label>O que você sente quando pensa em mim?</label>
+        <textarea name="sente"></textarea>
+
+        <label>Qual música te lembra de mim?</label>
+        <textarea name="musica"></textarea>
+
+        <label>Uma palavra que te define quando está comigo:</label>
+        <textarea name="palavra"></textarea>
+
+        <br><br>
+        <div style="text-align:center;">
+          <button type="button" onclick="enviarRespostas()" style="
+            padding: 12px 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            background-color: #ff4d6d;  
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+          ">Enviar Respostas 💌</button>
+        </div>
+      </form>
+
+      <div id="respostas" class="resposta-final" style="display:none;"></div>
+    </div>
+  </div>
+
+   <header>
+    <h1>Rychard e Mariana</h1>
+    <div class="estreia">Estreou em 25/12/2024 <span style="background-color: #90ee90; border-radius: 2px; padding: 2px 8px 2px 8px; color: white; margin-left: 10px">L</span> <spans style="display: inline-block;
+  background-color: #333;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  margin-left: 3px;">HD</spans></div>
+    <div style="
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+">
+  <div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #e50914;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 1;
+    width: 20px;
+    height: 25px;
+  ">
+    TOP
+    <span style="
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1;
+    ">10</span>
+  </div>
+
+  <div style="
+    font-size: 16px;
+    font-weight: bold;
+  ">Em alta no momento</div>
+</div>
+
+    <p class="descricao">Uma história de amor com capítulos que a gente nunca quer que acabem.</p>
+    <button class="play-button" onclick="startMovie()">Assistir</button>
+  </header>
+
+  <div class="video-section" id="video-section">
+    <h2>Filme Especial - 5 Meses de Amor 🎉</h2>
+    <iframe id="love-video" src="videopresente25.04.mp4" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <br>
+    <button class="back-button" onclick="goBack()">Voltar</button>
+    <div class="creditos">Roteiro: Rychard • Protagonista: Mariana • Direção: Nosso Amor</div>
+  </div>
+
+  <section class="episodes">
+    <div class="episode">
+      <img src="1.jpg" alt="Episódio 1">
+      <div class="episode-title">1. O Começo</div>
+      <div class="episode-desc">O Natal mais especial para mim, nossa primeira data comemorativa que vivemos juntos. 🎅🏻</div>
+    </div>
+    <div class="episode">
+      <img src="2.jpg" alt="Episódio 2">
+      <div class="episode-title">2. Foto aleatoria que me trás sentimeto de saudades</div>
+      <div class="episode-desc">Uma foto que tirei no brincando, mas que me traz muitas emoções quando vejo ela. 🌙</div>
+    </div>
+    <div class="episode">
+      <img src="3.jpg" alt="Episódio 3">
+      <div class="episode-title">3. Minhas roupas</div>
+      <div class="episode-desc">Você usando minhas roupas, e a gente zoando muito, me lembro dessa cena como se fosse ontem. 🩲</div>
+    </div>
+    <div class="episode">
+      <img src="4.jpg" alt="Episódio 4">
+      <div class="episode-title">4. Banho de mangueira</div>
+      <div class="episode-desc">Lembra da gente, tomando banho de mangueira? Jogando água um no outro, eu lavando seu cabelo, esse dia foi maravilhoso. 🚿</div>
+    </div>
+    <div class="episode">
+      <img src="5.jpg" alt="Episódio 5">
+      <div class="episode-title">5. Saudades dos seus abraços</div>
+      <div class="episode-desc">Sinto saudades do seus abraços e de momentos como esses, foram únicos e marcaram minha vida. 🥺</div>
+    </div>
+    <div class="episode">
+      <img src="6.jpg" alt="Episódio 6">
+      <div class="episode-title">6. APT, APT</div>
+      <div class="episode-desc">APT, APT, Era o que as crianças cantavam, enquanto a gente morria de rir e você com aquele lindo sorriso como sempre. 😄</div>
+    </div>
+    <div class="episode">
+      <img src="7.jpg" alt="Episódio 7">
+      <div class="episode-title">7. Nhac Nhac</div>
+      <div class="episode-desc">Eu fazendo você experimentar um MC de verdade pela primeira vez.😝</div>
+    </div>
+    <div class="episode">
+      <img src="8.jpg" alt="Episódio 8">
+      <div class="episode-title">8. Esse dia foi maluco</div>
+      <div class="episode-desc">Toda loucura que ocorreu, cidade sem luz, e nem isso conseguiu apagar nosso amor. ❤️</div>
+    </div>
+    <div class="episode">
+      <img src="9.jpg" alt="Episódio 9">
+      <div class="episode-title">9. Mapas do Coração</div>
+      <div class="episode-desc">A gente se beijando em publico, talvez pela primeira vez, mas foi muito marcante pra mim. 💋</div>
+    </div>
+    <div class="episode">
+      <img src="10.jpg" alt="Episódio 10">
+      <div class="episode-title">10. Amor em Cena</div>
+      <div class="episode-desc">Um dos nossos últimos beijos antes de eu ter que partir. 😭</div>
+    </div>
+    <div class="episode">
+      <img src="11.jpg" alt="Episódio 11">
+      <div class="episode-title">11. Uma cena que não pode ser esquecida</div>
+      <div class="episode-desc">Aqui está uma das cenas que marcaram a nossa vida, a foto que mais utilizamos até hoje. 📷</div>
+    </div>
+    <div class="episode">
+      <img src="13.jpg" alt="Episódio 12">
+      <div class="episode-title">12. Abençoa pai</div>
+      <div class="episode-desc">Abençoa pai, abençoa, adoro essa foto, tanto pelos memes, mas por todo contexto dela, a sua lingua pra fora, você com minha camisa. 🙏🏻</div>
+    </div>
+    <div class="episode">
+      <img src="14.jpg" alt="Episódio 13">
+      <div class="episode-title">13. Memphis Depay</div>
+      <div class="episode-desc">OLHA ELE AI! Momentos Memphis Depay kkk ❤️</div>
+    </div>
+    <div class="episode">
+      <img src="15.jpg" alt="Episódio 14">
+      <div class="episode-title">14. Calma calabreso</div>
+      <div class="episode-desc">Calma calabreso, talvez uma das nossas primeiras fotos com a lingua pra fora e eu sem camisa kk. 🎉</div>
+    </div>
+    <div class="episode">
+      <img src="16.jpg" alt="Episódio 15">
+      <div class="episode-title">15. Nós somos casados</div>
+      <div class="episode-desc">Tá olhando o que? Ela é minha, eu em. ✨</div>
+    </div>
+    <div class="episode">
+      <img src="17.jpg" alt="Episódio 16">
+      <div class="episode-title">16. Trilhando nosso amor</div>
+      <div class="episode-desc">Lembro da gente, caminhando pela rua no natal, indo até a praça, tirando essa foto, foi maravilhoso.</div>
+    </div>
+    <div class="episode">
+      <img src="18.jpg" alt="Episódio 17">
+      <div class="episode-title">17. Mais abraços</div>
+      <div class="episode-desc">Adoro quando você me abraça, e não me solta mais, me sinto amado e valorizado. ☀️</div>
+    </div>
+    <div class="episode">
+      <img src="19.jpg" alt="Episódio 18">
+      <div class="episode-title">18. Nosso Mundo</div>
+      <div class="episode-desc">O mundo pode estar em festa, mas meu universo é você.</div>
+    </div>
+  </section>
+  
+
+  <script>
+    function startMovie() {
+      document.querySelector('.video-section').style.display = 'block';
+      document.querySelector('header').style.display = 'none';
+    }
+    function goBack() {
+      document.querySelector('.video-section').style.display = 'none';
+      document.querySelector('header').style.display = 'flex';
+    }
+    function toggleNote() {
+      const note = document.getElementById('noteContent');
+      note.style.display = note.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function updateContador() {
+      const startDate = new Date("2024-12-26T00:00:00");
+      const now = new Date();
+      const diff = now - startDate;
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const months = Math.floor(totalSeconds / (30 * 24 * 60 * 60));
+      const days = Math.floor((totalSeconds % (30 * 24 * 60 * 60)) / (24 * 60 * 60));
+      const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      document.getElementById("contador").textContent = `Juntos há ${months} meses, ${days} dias, ${hours}h ${minutes}m ${seconds}s ❤️`;
+    }
+    setInterval(updateContador, 1000);
+    updateContador();
+
+    const canvas = document.querySelector('.fireworks');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    });
+    const fireworks = [];
+    function createFirework() {
+      fireworks.push({
+        x: Math.random() * w,
+        y: h,
+        radius: Math.random() * 3 + 2,
+        speed: Math.random() * 3 + 2,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+      });
+    }
+    function updateFireworks() {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < fireworks.length; i++) {
+        const f = fireworks[i];
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+        ctx.fillStyle = f.color;
+        ctx.fill();
+        f.y -= f.speed;
+        f.radius -= 0.05;
+        if (f.radius <= 0) {
+          fireworks.splice(i, 1);
+          i--;
+        }
+      }
+    }
+    function loopFireworks() {
+      if (Math.random() < 0.1) createFirework();
+      updateFireworks();
+      requestAnimationFrame(loopFireworks);
+    }
+    loopFireworks();
+
+    const heartsCanvas = document.querySelector('.floating-hearts');
+    const heartsCtx = heartsCanvas.getContext('2d');
+    heartsCanvas.width = window.innerWidth;
+    heartsCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      heartsCanvas.width = window.innerWidth;
+      heartsCanvas.height = window.innerHeight;
+    });
+    const hearts = [];
+    function createHeart() {
+      hearts.push({
+        x: Math.random() * heartsCanvas.width,
+        y: heartsCanvas.height,
+        size: Math.random() * 10 + 10,
+        speed: Math.random() * 1 + 0.5,
+        alpha: 1
+      });
+    }
+    function updateHearts() {
+      heartsCtx.clearRect(0, 0, heartsCanvas.width, heartsCanvas.height);
+      for (let i = 0; i < hearts.length; i++) {
+        const h = hearts[i];
+        heartsCtx.globalAlpha = h.alpha;
+        heartsCtx.fillStyle = 'pink';
+        heartsCtx.beginPath();
+        heartsCtx.arc(h.x, h.y, h.size, 0, Math.PI * 2);
+        heartsCtx.fill();
+        h.y -= h.speed;
+        h.alpha -= 0.005;
+        if (h.alpha <= 0) {
+          hearts.splice(i, 1);
+          i--;
+        }
+      }
+    }
+    function loopHearts() {
+      if (Math.random() < 0.05) createHeart();
+      updateHearts();
+      requestAnimationFrame(loopHearts);
+    }
+    loopHearts();
+
+    const emojiCanvas = document.getElementById('emojiCanvas');
+    const emojiCtx = emojiCanvas.getContext('2d');
+    emojiCanvas.width = window.innerWidth;
+    emojiCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      emojiCanvas.width = window.innerWidth;
+      emojiCanvas.height = window.innerHeight;
+    });
+    const emojis = ['💘', '❤️'];
+    const emojiParticles = [];
+    function createEmoji() {
+      emojiParticles.push({
+        emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        x: Math.random() * emojiCanvas.width,
+        y: emojiCanvas.height,
+        speed: Math.random() * 1 + 0.5,
+        alpha: 1,
+        size: Math.random() * 24 + 24
+      });
+    }
+    function updateEmojis() {
+      emojiCtx.clearRect(0, 0, emojiCanvas.width, emojiCanvas.height);
+      for (let i = 0; i < emojiParticles.length; i++) {
+        const e = emojiParticles[i];
+        emojiCtx.globalAlpha = e.alpha;
+        emojiCtx.font = `${e.size}px serif`;
+        emojiCtx.fillText(e.emoji, e.x, e.y);
+        e.y -= e.speed;
+        e.alpha -= 0.003;
+        if (e.alpha <= 0) {
+          emojiParticles.splice(i, 1);
+          i--;
+        }
+      }
+    }
+    function loopEmojis() {
+      if (Math.random() < 0.1) createEmoji();
+      updateEmojis();
+      requestAnimationFrame(loopEmojis);
+    }
+    loopEmojis();
+
+    function abrirModal() {
+      document.getElementById("modalJogo").style.display = "block";
+    }
+
+    function fecharModal() {
+      document.getElementById("modalJogo").style.display = "none";
+      document.getElementById("respostas").style.display = "none";
+    }
+
+    function mostrarCartinha() {
+      document.getElementById("cartinha").style.display = "block";
+    }
+
+    function enviarRespostas() {
+      const form = document.forms['formJogo'];
+      const respostas = {
+        ama: form.ama.value,
+        confia: form.confia.value,
+        filho: form.filho.value,
+        sonho: form.sonho.value,
+        momento: form.momento.value,
+        sente: form.sente.value,
+        musica: form.musica.value,
+        palavra: form.palavra.value
+      };
+
+      const texto = `
+        <h3>Suas respostas ❤️</h3>
+        <p><strong>Você me ama?</strong> ${respostas.ama}</p>
+        <p><strong>Você confia em mim?</strong> ${respostas.confia}</p>
+        <p><strong>Você sonha em ter um filho comigo?</strong> ${respostas.filho}</p>
+        <p><strong>Seu maior sonho comigo:</strong> ${respostas.sonho}</p>
+        <p><strong>Momento mais especial:</strong> ${respostas.momento}</p>
+        <p><strong>O que sente quando pensa em mim:</strong> ${respostas.sente}</p>
+        <p><strong>Música que te lembra de mim:</strong> ${respostas.musica}</p>
+        <p><strong>Palavra que te define comigo:</strong> ${respostas.palavra}</p>
+        <p>✨ Me envia essas respostas? Quero guardar no coração 💖</p>
+      `;
+
+      const divRespostas = document.getElementById("respostas");
+      divRespostas.innerHTML = texto;
+      divRespostas.style.display = "block";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("modalJogo");
+      if (event.target === modal) {
+        fecharModal();
+      }
+    }
+
+    // New JS to update header on episode click
+    document.addEventListener('DOMContentLoaded', () => {
+      const episodes = document.querySelectorAll('.episode');
+      const header = document.querySelector('header');
+      // const headerTitle = header.querySelector('h1'); // no longer update title
+      const headerEstreia = header.querySelector('.estreia');
+      const headerDescricao = header.querySelector('.descricao');
+
+      episodes.forEach(episode => {
+        episode.addEventListener('click', () => {
+          const imgSrc = episode.querySelector('img').src;
+          // const title = episode.querySelector('.episode-title').textContent; // no longer update title
+          const desc = episode.querySelector('.episode-desc').textContent;
+
+          // Update header background image
+          header.style.backgroundImage = `url('${imgSrc}')`;
+
+          // Do not update header title, keep fixed
+         
+          headerDescricao.textContent = desc;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
